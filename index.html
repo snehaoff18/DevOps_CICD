@@ -1,133 +1,568 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>My Travel Blog</title>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Karma">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calcly</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Karma", sans-serif}
-.w3-bar-block .w3-bar-item {padding:20px}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e12;
+    --surface: #16161d;
+    --surface2: #1e1e28;
+    --surface3: #252533;
+    --accent: #c8f75e;
+    --accent2: #7b5ef8;
+    --accent3: #f75e8b;
+    --text: #f0f0f8;
+    --muted: #888899;
+    --border: rgba(255,255,255,0.07);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 3rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  header h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-top: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  .main-layout {
+    display: grid;
+    grid-template-columns: 340px 300px;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 700px;
+    align-items: start;
+  }
+
+  /* ===================== CALCULATOR ===================== */
+  .calculator {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .calc-display {
+    padding: 1.5rem 1.5rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
+  .calc-history {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+    min-height: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .calc-input {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+    font-weight: 500;
+    text-align: right;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: font-size 0.15s;
+  }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    padding: 0;
+  }
+
+  .calc-btn {
+    background: var(--surface);
+    border: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 1.1rem 0.5rem;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.08s, color 0.12s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: -0.01em;
+  }
+
+  .calc-btn:hover { background: var(--surface3); }
+  .calc-btn:active { transform: scale(0.93); background: var(--surface2); }
+
+  .calc-btn.op {
+    color: var(--accent2);
+    font-size: 1.2rem;
+  }
+
+  .calc-btn.fn {
+    color: var(--accent3);
+    font-size: 0.85rem;
+    letter-spacing: 0;
+  }
+
+  .calc-btn.equals {
+    background: var(--accent);
+    color: #0e0e12;
+    font-size: 1.3rem;
+  }
+  .calc-btn.equals:hover { background: #d8ff7a; }
+  .calc-btn.equals:active { background: #b8e840; }
+
+  .calc-btn.zero { grid-column: span 2; }
+
+  .calc-btn.clear { color: var(--accent3); }
+  .calc-btn.del { color: var(--accent3); font-size: 0.85rem; }
+
+  /* ===================== TIC TAC TOE ===================== */
+  .ttt {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .ttt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ttt-title {
+    font-size: 0.7rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .ttt-reset {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ttt-reset:hover { border-color: var(--accent); color: var(--accent); }
+
+  .ttt-scores {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .score-card {
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .score-card.active-x { border-color: var(--accent); }
+  .score-card.active-o { border-color: var(--accent2); }
+
+  .score-symbol {
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .score-symbol.x { color: var(--accent); }
+  .score-symbol.o { color: var(--accent2); }
+
+  .score-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-top: 2px;
+    color: var(--text);
+  }
+
+  .score-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+  }
+
+  .vs-text {
+    font-size: 0.65rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+  }
+
+  .ttt-status {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    min-height: 20px;
+    transition: color 0.2s;
+  }
+  .ttt-status.win { color: var(--accent); font-weight: 500; }
+  .ttt-status.draw { color: var(--accent3); }
+
+  .ttt-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .ttt-cell {
+    aspect-ratio: 1;
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.1s, transform 0.1s, border-color 0.2s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ttt-cell:hover:not(.taken) { background: var(--surface3); border-color: rgba(255,255,255,0.15); }
+  .ttt-cell:active:not(.taken) { transform: scale(0.92); }
+
+  .ttt-cell.taken { cursor: default; }
+  .ttt-cell.x-cell { color: var(--accent); border-color: rgba(200,247,94,0.25); background: rgba(200,247,94,0.05); }
+  .ttt-cell.o-cell { color: var(--accent2); border-color: rgba(123,94,248,0.25); background: rgba(123,94,248,0.05); }
+  .ttt-cell.win-cell { animation: pulse-win 0.5s ease; }
+
+  .ttt-cell .mark {
+    display: inline-block;
+    animation: pop-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes pop-in {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes pulse-win {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 680px) {
+    .main-layout {
+      grid-template-columns: 1fr;
+      max-width: 380px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .calc-btn { padding: 0.95rem 0.3rem; font-size: 0.9rem; }
+    .calc-input { font-size: 1.6rem; }
+  }
 </style>
 </head>
 <body>
 
-<!-- Sidebar (hidden by default) -->
-<nav class="w3-sidebar w3-bar-block w3-card w3-top w3-xlarge w3-animate-left" style="display:none;z-index:2;width:40%;min-width:300px" id="mySidebar">
-  <a href="javascript:void(0)" onclick="w3_close()"
-  class="w3-bar-item w3-button">Close Menu</a>
-  <a href="#food" onclick="w3_close()" class="w3-bar-item w3-button">Food</a>
-  <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button">About</a>
-</nav>
+<header>
+  <h1>Calcly</h1>
+  <p>calculator + tic tac toe</p>
+</header>
 
-<!-- Top menu -->
-<div class="w3-top">
-  <div class="w3-white w3-xlarge" style="max-width:1200px;margin:auto">
-    <div class="w3-button w3-padding-16 w3-left" onclick="w3_open()">☰</div>
-    <div class="w3-right w3-padding-16">Mail</div>
-    <div class="w3-center w3-padding-16">My Food</div>
-  </div>
-</div>
-  
-<!-- !PAGE CONTENT! -->
-<div class="w3-main w3-content w3-padding" style="max-width:1200px;margin-top:100px">
+<div class="main-layout">
 
-  <!-- First Photo Grid-->
-  <div class="w3-row-padding w3-padding-16 w3-center" id="food">
-    <div class="w3-quarter">
-      <img src="https://vaya.in/recipes/wp-content/uploads/2018/06/Club-sandwich.jpg" alt="Sandwich" style="width:100%">
-      <h3>The Perfect Sandwich, A Real NYC Classic</h3>
+  <!-- CALCULATOR -->
+  <div class="calculator">
+    <div class="calc-display">
+      <div class="calc-history" id="history"></div>
+      <div class="calc-input" id="display">0</div>
     </div>
-    <div class="w3-quarter">
-      <img src="https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/53BGPNAB6YI63C7LFNHEQGYVAA.jpg" alt="Steak" style="width:100%">
-      <h3>Let Me Tell You About This Steak</h3>
-    </div>
-    <div class="w3-quarter">
-      <img src="https://blog.lexmed.com/images/librariesprovider80/blog-post-featured-images/shutterstock_1933299218.jpg?sfvrsn=4a8d900b_0" alt="Cherries" style="width:100%">
-      <h3>Cherries, interrupted</h3>
-      <p>What else?</p>
-    </div>
-    <div class="w3-quarter">
-      <img src="https://www.acouplecooks.com/wp-content/uploads/2023/01/Red-Sauce-Pasta-008.jpg" alt="Pasta and Wine" style="width:100%">
-      <h3>Once Again, Robust Wine and Vegetable Pasta</h3>
-    </div>
-  </div>
-  
-  <!-- Second Photo Grid-->
-  <div class="w3-row-padding w3-padding-16 w3-center">
-    <div class="w3-quarter">
-      <img src="https://feelgoodfoodie.net/wp-content/uploads/2022/04/How-to-Make-Popsicles-15.jpg" alt="Popsicle" style="width:100%">
-      <h3>All I Need Is a Popsicle</h3>
-    </div>
-    <div class="w3-quarter">
-      <img src="https://www.wholesomeyum.com/wp-content/uploads/2021/07/wholesomeyum-Pan-Seared-Salmon-12.jpg" alt="Salmon" style="width:100%">
-      <h3>Salmon For Your Skin</h3>
-    </div>
-    <div class="w3-quarter">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Desserts.jpg/640px-Desserts.jpg" alt="Sandwich" style="width:100%">
-      <h3>The Perfect Dessert</h3>
-    </div>
-    <div class="w3-quarter">
-      <img src="https://www.simplejoy.com/wp-content/uploads/2021/04/Croissant-French-Toast-5.jpg" alt="Croissant" style="width:100%">
-      <h3>Le French</h3>
+    <div class="calc-grid">
+      <button class="calc-btn fn" data-action="clear">AC</button>
+      <button class="calc-btn fn" data-action="sign">+/−</button>
+      <button class="calc-btn fn" data-action="percent">%</button>
+      <button class="calc-btn op" data-action="op" data-op="÷">÷</button>
+
+      <button class="calc-btn" data-action="num" data-num="7">7</button>
+      <button class="calc-btn" data-action="num" data-num="8">8</button>
+      <button class="calc-btn" data-action="num" data-num="9">9</button>
+      <button class="calc-btn op" data-action="op" data-op="×">×</button>
+
+      <button class="calc-btn" data-action="num" data-num="4">4</button>
+      <button class="calc-btn" data-action="num" data-num="5">5</button>
+      <button class="calc-btn" data-action="num" data-num="6">6</button>
+      <button class="calc-btn op" data-action="op" data-op="−">−</button>
+
+      <button class="calc-btn" data-action="num" data-num="1">1</button>
+      <button class="calc-btn" data-action="num" data-num="2">2</button>
+      <button class="calc-btn" data-action="num" data-num="3">3</button>
+      <button class="calc-btn op" data-action="op" data-op="+">+</button>
+
+      <button class="calc-btn zero del" data-action="del">⌫</button>
+      <button class="calc-btn" data-action="num" data-num=".">.</button>
+      <button class="calc-btn equals" data-action="equals">=</button>
     </div>
   </div>
 
-  <!-- Pagination -->
-  <div class="w3-center w3-padding-32">
-    <div class="w3-bar">
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">«</a>
-      <a href="#" class="w3-bar-item w3-black w3-button">1</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">2</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">3</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">4</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">»</a>
+  <!-- TIC TAC TOE -->
+  <div class="ttt">
+    <div class="ttt-header">
+      <div class="ttt-title">Tic Tac Toe</div>
+      <button class="ttt-reset" id="resetBtn">New Game</button>
+    </div>
+
+    <div class="ttt-scores">
+      <div class="score-card active-x" id="scoreX">
+        <div class="score-symbol x">X</div>
+        <div class="score-num" id="scoreXNum">0</div>
+        <div class="score-label">Player 1</div>
+      </div>
+      <div class="vs-text">VS</div>
+      <div class="score-card" id="scoreO">
+        <div class="score-symbol o">O</div>
+        <div class="score-num" id="scoreONum">0</div>
+        <div class="score-label">Player 2</div>
+      </div>
+    </div>
+
+    <div class="ttt-status" id="tttStatus">X's turn</div>
+
+    <div class="ttt-board" id="tttBoard">
+      <div class="ttt-cell" data-index="0"></div>
+      <div class="ttt-cell" data-index="1"></div>
+      <div class="ttt-cell" data-index="2"></div>
+      <div class="ttt-cell" data-index="3"></div>
+      <div class="ttt-cell" data-index="4"></div>
+      <div class="ttt-cell" data-index="5"></div>
+      <div class="ttt-cell" data-index="6"></div>
+      <div class="ttt-cell" data-index="7"></div>
+      <div class="ttt-cell" data-index="8"></div>
     </div>
   </div>
-  
-  <hr id="about">
 
-  <!-- About Section -->
-  <div class="w3-container w3-padding-32 w3-center">  
-    <h3>About Me, The Food Man</h3><br>
-    <img src="https://www.cordonbleu.edu/Files/MediaFile/58300.jpg" alt="Me" class="w3-image" style="display:block;margin:auto" width="800" height="533">
-    <div class="w3-padding-32">
-      <h4><b>I am Who I Am!</b></h4>
-      <h6><i>With Passion For Real, Good Food</i></h6>
-      <p>Just me, myself and I, exploring the universe of unknownment. I have a heart of love and an interest on food blog. I want to share my world with you.</p>
-    </div>
-  </div>
-  <hr>
-  
-  <!-- Footer -->
-  <footer class="w3-row-padding w3-padding-32">
-
-    <div class="w3-third w3-serif">
-      <h3>POPULAR TAGS</h3>
-      <p>
-        <span class="w3-tag w3-black w3-margin-bottom">Travel</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">New York</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Dinner</span>
-        <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Salmon</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">France</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Drinks</span>
-        <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Ideas</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Flavors</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Cuisine</span>
-        <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Chicken</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Dressing</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Fried</span>
-        <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Fish</span> <span class="w3-tag w3-dark-grey w3-small w3-margin-bottom">Duck</span>
-      </p>
-    </div>
-  </footer>
-
-<!-- End page content -->
 </div>
 
 <script>
-// Script to open and close sidebar
-function w3_open() {
-  document.getElementById("mySidebar").style.display = "block";
-}
- 
-function w3_close() {
-  document.getElementById("mySidebar").style.display = "none";
-}
-</script>
+  /* =========== CALCULATOR LOGIC =========== */
+  const display = document.getElementById('display');
+  const history = document.getElementById('history');
 
+  let current = '0', stored = null, op = null, justEvaled = false, fresh = true;
+
+  function setDisplay(val) {
+    let s = String(val);
+    if (s.length > 12) s = parseFloat(parseFloat(s).toPrecision(9)).toString();
+    display.textContent = s;
+    display.style.fontSize = s.length > 10 ? '1.4rem' : s.length > 8 ? '1.8rem' : '';
+  }
+
+  function calc(a, b, operator) {
+    a = parseFloat(a); b = parseFloat(b);
+    if (operator === '+') return a + b;
+    if (operator === '−') return a - b;
+    if (operator === '×') return a * b;
+    if (operator === '÷') return b === 0 ? 'Error' : a / b;
+  }
+
+  document.querySelector('.calc-grid').addEventListener('click', e => {
+    const btn = e.target.closest('.calc-btn');
+    if (!btn) return;
+    const action = btn.dataset.action;
+
+    if (action === 'num') {
+      const n = btn.dataset.num;
+      if (n === '.' && current.includes('.')) return;
+      if (justEvaled || fresh) { current = n === '.' ? '0.' : n; justEvaled = false; fresh = false; }
+      else current = current === '0' && n !== '.' ? n : current + n;
+      setDisplay(current);
+    }
+
+    if (action === 'op') {
+      const newOp = btn.dataset.op;
+      if (stored !== null && op && !justEvaled) {
+        let res = calc(stored, current, op);
+        if (res === 'Error') { setDisplay('Error'); history.textContent = ''; stored = null; op = null; fresh = true; return; }
+        res = parseFloat(res.toFixed(10));
+        setDisplay(res);
+        history.textContent = `${stored} ${op} ${current} =`;
+        stored = res;
+      } else {
+        stored = parseFloat(current);
+      }
+      op = newOp; fresh = true; justEvaled = false;
+      history.textContent = `${stored} ${op}`;
+    }
+
+    if (action === 'equals') {
+      if (stored === null || op === null) return;
+      let a = stored, b = parseFloat(current);
+      let res = calc(a, b, op);
+      if (res === 'Error') { setDisplay('Error'); history.textContent = ''; stored = null; op = null; fresh = true; return; }
+      res = parseFloat(res.toFixed(10));
+      history.textContent = `${a} ${op} ${b} =`;
+      setDisplay(res);
+      stored = null; op = null; current = String(res); justEvaled = true; fresh = true;
+    }
+
+    if (action === 'clear') {
+      current = '0'; stored = null; op = null; justEvaled = false; fresh = true;
+      setDisplay('0'); history.textContent = '';
+    }
+
+    if (action === 'del') {
+      if (justEvaled || current.length <= 1) { current = '0'; fresh = true; }
+      else current = current.slice(0, -1);
+      setDisplay(current);
+    }
+
+    if (action === 'sign') {
+      current = String(-parseFloat(current));
+      setDisplay(current);
+    }
+
+    if (action === 'percent') {
+      current = String(parseFloat(current) / 100);
+      setDisplay(current);
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    const map = { '0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','.':'.' };
+    const opMap = { '+':'+', '-':'−', '*':'×', '/':'÷' };
+    if (map[e.key]) document.querySelector(`[data-num="${e.key}"]`).click();
+    else if (opMap[e.key]) document.querySelector(`[data-op="${opMap[e.key]}"]`).click();
+    else if (e.key === 'Enter' || e.key === '=') document.querySelector('[data-action="equals"]').click();
+    else if (e.key === 'Backspace') document.querySelector('[data-action="del"]').click();
+    else if (e.key === 'Escape') document.querySelector('[data-action="clear"]').click();
+    else if (e.key === '%') document.querySelector('[data-action="percent"]').click();
+  });
+
+  /* =========== TIC TAC TOE LOGIC =========== */
+  const WIN_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let board = Array(9).fill(null), xTurn = true, gameOver = false;
+  let scores = { X: 0, O: 0 };
+
+  const cells = document.querySelectorAll('.ttt-cell');
+  const statusEl = document.getElementById('tttStatus');
+  const scoreXNum = document.getElementById('scoreXNum');
+  const scoreONum = document.getElementById('scoreONum');
+  const scoreXCard = document.getElementById('scoreX');
+  const scoreOCard = document.getElementById('scoreO');
+
+  function updateTurnHighlight() {
+    scoreXCard.className = 'score-card' + (xTurn ? ' active-x' : '');
+    scoreOCard.className = 'score-card' + (!xTurn ? ' active-o' : '');
+  }
+
+  function checkWinner() {
+    for (const [a,b,c] of WIN_LINES) {
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) return { winner: board[a], line: [a,b,c] };
+    }
+    if (board.every(c => c)) return { winner: 'draw' };
+    return null;
+  }
+
+  cells.forEach(cell => {
+    cell.addEventListener('click', () => {
+      const i = parseInt(cell.dataset.index);
+      if (board[i] || gameOver) return;
+      const player = xTurn ? 'X' : 'O';
+      board[i] = player;
+      cell.classList.add('taken', player === 'X' ? 'x-cell' : 'o-cell');
+      cell.innerHTML = `<span class="mark">${player}</span>`;
+      const result = checkWinner();
+      if (result) {
+        gameOver = true;
+        if (result.winner === 'draw') {
+          statusEl.textContent = "It's a draw!";
+          statusEl.className = 'ttt-status draw';
+        } else {
+          statusEl.textContent = `${result.winner} wins! 🎉`;
+          statusEl.className = 'ttt-status win';
+          scores[result.winner]++;
+          scoreXNum.textContent = scores.X;
+          scoreONum.textContent = scores.O;
+          result.line.forEach(idx => cells[idx].classList.add('win-cell'));
+        }
+        scoreXCard.className = 'score-card';
+        scoreOCard.className = 'score-card';
+      } else {
+        xTurn = !xTurn;
+        statusEl.textContent = `${xTurn ? 'X' : 'O'}'s turn`;
+        statusEl.className = 'ttt-status';
+        updateTurnHighlight();
+      }
+    });
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    board = Array(9).fill(null);
+    xTurn = true; gameOver = false;
+    cells.forEach(c => {
+      c.className = 'ttt-cell';
+      c.innerHTML = '';
+    });
+    statusEl.textContent = "X's turn";
+    statusEl.className = 'ttt-status';
+    updateTurnHighlight();
+  });
+</script>
 </body>
 </html>
